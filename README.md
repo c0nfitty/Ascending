@@ -41,8 +41,8 @@ With the server running (`uv run poe start`):
 # Health check
 curl http://localhost:8080/ping
 
-# Describe a rug
-curl -X POST http://localhost:8080/invocations -F "file=@path/to/local/image.png" \
+# Generate structured rug description
+curl -X POST http://localhost:8080/invocations -F "file=@path/to/local/image.png" | jq .
 ```
 
 ## Environment Variables
