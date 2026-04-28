@@ -7,15 +7,15 @@ requires-python = ">=3.11"
 dependencies = [
     "boto3>=1.35.0",
     "fastapi>=0.136.1",
-    "strands-agents>=0.1.0",
     "pydantic-settings>=2.14.0",
+    "strands-agents>=0.1.0",
     "uvicorn[standard]>=0.46.0",
 ]
 
 [tool.poe.tasks]
-start = "python main.py"
-lint = "ruff check src"
-format = "ruff format src"
+start = "python agent.py"
+lint = "ruff check ."
+format = "ruff format ."
 
 [tool.uv]
 package = true
@@ -34,8 +34,9 @@ dev = [
 ]
 
 [tool.ruff]
-line-length = 100
+line-length = 320 # Allow for longer lines due to agents systems prompt
 target-version = "py311"
+exclude = ["bestsofar3.py"]                                                                                               
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
