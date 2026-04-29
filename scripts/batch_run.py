@@ -63,8 +63,8 @@ def _write_json(s3, bucket: str, key: str, data: dict) -> None:
 
 
 @retry(wait=wait_exponential_jitter(initial=1, max=60), stop=stop_after_attempt(3))
-def _process_with_retry(image_bytes: bytes, filename: str):
-    return process_image(image_bytes, filename=filename)
+def _process_with_retry(image_bytes: bytes, filename: str, rug_id: str, s3_image_key: str):
+    return process_image(image_bytes, filename=filename, rug_id=rug_id, s3_image_key=s3_image_key)
 
 
 def run(output_prefix: str, limit: int | None = None) -> None:
@@ -95,8 +95,9 @@ def run(output_prefix: str, limit: int | None = None) -> None:
             continue
 
         try:
+            rug_id = pathlib.Path(key).stem.split("-")[0]
             image_bytes = _fetch_image(s3, settings.s3_input_bucket, key)
-            record = _process_with_retry(image_bytes, filename=key)
+            record = _process_with_retry(image_bytes, filename=key, rug_id=rug_id, s3_image_key=key)
             _write_json(s3, settings.s3_output_bucket, out_key, record.model_dump())
             logger.info("ok   %s → %s", key, out_key)
             completed += 1
