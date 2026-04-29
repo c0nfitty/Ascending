@@ -1,3 +1,5 @@
+import pathlib
+
 import uvicorn
 from fastapi import FastAPI, HTTPException, UploadFile
 
@@ -6,15 +8,18 @@ from maplerugs.pipeline import RugRecord, process_image
 
 app = FastAPI(title="Maple Rugs Description Agent")
 
+_ACCEPTED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp"}
+
 
 @app.post("/invocations")
 async def invocations(file: UploadFile) -> RugRecord:
-    if not file.content_type or file.content_type != "image/png":
-        raise HTTPException(status_code=422, detail="File must be a PNG image")
+    filename = file.filename or ""
+    if pathlib.Path(filename).suffix.lower() not in _ACCEPTED_EXTENSIONS:
+        raise HTTPException(status_code=422, detail=f"Unsupported file type: {filename}")
 
     try:
         image_bytes = await file.read()
-        return process_image(image_bytes, filename=file.filename or "")
+        return process_image(image_bytes, filename=filename)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

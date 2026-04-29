@@ -1,9 +1,25 @@
+import pathlib
+from typing import Literal
+
 import boto3
 from pydantic import BaseModel
 from strands import Agent
 from strands.models import BedrockModel
 
 from maplerugs.config import settings
+
+
+def _image_format(filename: str) -> Literal["png", "jpeg", "gif", "webp"]:
+    match pathlib.Path(filename).suffix.lower():
+        case ".jpg" | ".jpeg":
+            return "jpeg"
+        case ".gif":
+            return "gif"
+        case ".webp":
+            return "webp"
+        case _:
+            return "png"
+
 
 PROMPT_VERSION = "1.1.0"
 
@@ -122,16 +138,11 @@ description_agent = Agent(
 
 
 def analyze_image(image_bytes: bytes, filename: str = "") -> RugAnalysis:
-    prompt_text = f"Filename: {filename}\n\nanalyze this rug and return a structured description." if filename else "analyze this rug and return a structured description."
+    prompt_text = f"Filename: {filename}\n\nAnalyze this rug and return a structured description."
     result = description_agent(
         [
-            {
-                "role": "user",
-                "content": [
-                    {"image": {"format": "png", "source": {"bytes": image_bytes}}},
-                    {"text": prompt_text},
-                ],
-            }
+            {"image": {"format": _image_format(filename), "source": {"bytes": image_bytes}}},
+            {"text": prompt_text},
         ]
     )
     output = result.structured_output
