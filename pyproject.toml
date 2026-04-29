@@ -34,9 +34,12 @@ dev = [
 ]
 
 [tool.ruff]
-line-length = 320 # Allow for longer lines due to agents systems prompt
+line-length = 120
 target-version = "py311"
 exclude = ["bestsofar3.py"]                                                                                               
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/maplerugs/agents/description_agent.py" = ["E501"]

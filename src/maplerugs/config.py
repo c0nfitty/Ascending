@@ -6,10 +6,11 @@ class Settings(BaseSettings):
     aws_region: str = "us-east-1"
     aws_profile: str | None = None
     s3_bucket: str = ""
-    bedrock_model_id: str = "anthropic.claude-3-7-sonnet-20250219-v1:0"
+    bedrock_model_id: str = "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
     bedrock_knowledge_base_id: str = ""
     a2a_host: str = "0.0.0.0"
     a2a_port: int = 8080
+    a2a_base_url: str = "http://localhost:8080"
     log_level: str = "INFO"
 
 
