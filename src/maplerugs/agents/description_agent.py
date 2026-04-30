@@ -21,7 +21,7 @@ def _image_format(filename: str) -> Literal["png", "jpeg", "gif", "webp"]:
             return "png"
 
 
-PROMPT_VERSION = "1.1.0"
+PROMPT_VERSION = "1.2.0"
 
 
 class RugAnalysis(BaseModel):
@@ -67,7 +67,7 @@ Examine the provided rug image and return a structured analysis. Follow these fi
 - year: Approximate decade or era only if strongly indicated by the design (e.g. "1960s", "Early 20th century", "Victorian era"). Return "UNKNOWN" for anything that appears modern or contemporary — do not guess.
 - material: The likely material if determinable from visible texture and sheen (e.g. "Wool", "Silk", "Wool and silk blend", "Synthetic pile"). Return "UNKNOWN" if not clear.
 
-If no image is provided, ask the user for one. If the image is not a rug, set pattern_type to "NOT A RUG" and all other fields to "NOT APPLICABLE". Do not guess or fabricate details that are not visually evident in the image.
+If no image is provided, ask the user for one. Do not guess or fabricate details that are not visually evident in the image.
 </instructions>
 
 <examples>
@@ -105,25 +105,6 @@ If no image is provided, ask the user for one. If the image is not a rug, set pa
   "origin": "Turkish",
   "year": "UNKNOWN",
   "material": "Wool"
-}
-</output>
-</example>
-
-<example>
-<description>A photograph of an office standing desk</description>
-<output>
-{
-  "description_raw": "NOT APPLICABLE",
-  "pattern_type": "NOT A RUG",
-  "style": "NOT APPLICABLE",
-  "primary_colors": ["NOT APPLICABLE"],
-  "secondary_colors": ["NOT APPLICABLE"],
-  "design_elements": ["NOT APPLICABLE"],
-  "tone": "NOT APPLICABLE",
-  "complexity": "NOT APPLICABLE",
-  "origin": "NOT APPLICABLE",
-  "year": "NOT APPLICABLE",
-  "material": "NOT APPLICABLE"
 }
 </output>
 </example>
