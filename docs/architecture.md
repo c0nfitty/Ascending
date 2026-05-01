@@ -57,7 +57,6 @@ Re-runs are idempotent: existing output files are skipped; failures are written 
 | Index field | `combined_text`: all fields concatenated; this is what gets embedded and searched |
 
 **Known Limitations:**
-- Low image resolution: Source images are 25 DPI. This limits the vision model's ability to distinguish finer details in color/texture.
 
 - Limited metadata coverage: Catalog metadata is available for a subset of images. Records without a match are indexed on AI generated fields only.
 
