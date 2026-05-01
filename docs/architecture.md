@@ -2,7 +2,7 @@
 
 ## Overview
 
-The description pipeline (left) ingests rug images from S3, runs them through a vision model, and loads the structured output into a vector index. The search interface (right) lets the sales team query that index in plain language through a Bedrock Knowledge Base or Jarvis.
+The description pipeline ingests rug images from S3, runs them through a vision model, and loads the structured output into a vector index. The search interface lets the sales team query that index in plain language through a Bedrock Knowledge Base or Jarvis.
 
 ```mermaid
 flowchart LR
@@ -44,7 +44,7 @@ Each image in `S3_INPUT_BUCKET` is analyzed by the vision model, enriched with c
 2. **Analyze:** Run the image through `BEDROCK_MODEL_ID` (Claude Sonnet 4.6 or Amazon Nova Pro)
 3. **Enrich:** Join available catalog metadata (year, color name, customer facing product names)
 4. **Write:** write `RugRecord` JSON to `S3_OUTPUT_BUCKET` under a model keyed prefix, so runs against different models never collide
-5. **Index:** sync the Bedrock Knowledge Base to embed `combined_text` into the S3 vector store
+5. **Index:** Sync the Bedrock Knowledge Base to embed `combined_text` into the S3 vector store
 
 Re-runs are idempotent: existing output files are skipped; failures are written to a separate prefix and retried on the next run.
 
@@ -56,9 +56,10 @@ Re-runs are idempotent: existing output files are skipped; failures are written 
 | Catalog metadata | Year, official color name, customer facing product names |
 | Index field | `combined_text`: all fields concatenated; this is what gets embedded and searched |
 
-**Low image resolution:** Source images are 25 DPI. This limits the vision model's ability to distinguish finer details in color/texture.
+**Known Limitations:**
+- Low image resolution: Source images are 25 DPI. This limits the vision model's ability to distinguish finer details in color/texture.
 
-**Limited metadata coverage:** Catalog metadata is available for a subset of images. Records without a match are indexed on AI generated fields only.
+- Limited metadata coverage: Catalog metadata is available for a subset of images. Records without a match are indexed on AI generated fields only.
 
 ---
 
@@ -112,5 +113,5 @@ Re-runs are idempotent: existing output files are skipped; failures are written 
 
 ## Open Questions
 
-- Is catalog metadata meaningfully improving search results? If so, expanding coverage is the right next investment.
-- Which vision model produces better descriptions on this dataset: Claude Sonnet 4.6 or Amazon Nova Pro?
+- Which vision model produces better descriptions: Claude Sonnet 4.6 or Amazon Nova Pro?
+- Is catalog metadata improving search results? If so, we may want to invest a few days time in expanding metadata coverage
