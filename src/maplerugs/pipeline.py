@@ -17,11 +17,19 @@ class SourceConfig(BaseModel):
     prompt_version: str
 
 
+class CatalogMetadata(BaseModel):
+    style: str | None = None
+    year: str | None = None
+    color_name: str | None = None
+    customer_style_names: list[str] = []
+
+
 class RugRecord(BaseModel):
     source_config: SourceConfig
     width: str
     height: str
     analysis: RugAnalysis
+    catalog_metadata: CatalogMetadata | None = None
     combined_text: str
 
 
@@ -30,10 +38,10 @@ def _parse_dimensions(filename: str) -> tuple[str, str] | None:
     return (m.group(1), m.group(2)) if m else None
 
 
-def _make_combined_text(analysis: RugAnalysis) -> str:
+def _make_combined_text(analysis: RugAnalysis, catalog: CatalogMetadata | None = None) -> str:
     fields = [
         analysis.description_raw,
-        f"Style: {analysis.style}.",
+        f"Analysis Style: {analysis.style}.",
         f"Pattern: {analysis.pattern_type}.",
         f"Primary colors: {', '.join(analysis.primary_colors)}.",
         f"Secondary colors: {', '.join(analysis.secondary_colors)}.",
@@ -42,8 +50,15 @@ def _make_combined_text(analysis: RugAnalysis) -> str:
         f"Complexity: {analysis.complexity}.",
         f"Origin: {analysis.origin}.",
         f"Material: {analysis.material}.",
-        f"Year: {analysis.year}.",
     ]
+    if catalog and catalog.style:
+        fields.append(f"Catalog Style: {catalog.style}.")
+    if catalog and catalog.year:
+        fields.append(f"Year: {catalog.year}.")
+    if catalog and catalog.color_name:
+        fields.append(f"Color: {catalog.color_name}.")
+    if catalog and catalog.customer_style_names:
+        fields.append(f"Also known as: {', '.join(catalog.customer_style_names)}.")
     return " ".join(f for f in fields if "UNKNOWN" not in f and "NOT APPLICABLE" not in f)
 
 
@@ -52,6 +67,7 @@ def process_image(
     filename: str = "",
     rug_id: str | None = None,
     s3_image_key: str | None = None,
+    catalog_metadata: CatalogMetadata | None = None,
 ) -> RugRecord:
     analysis = analyze_image(image_bytes, filename)
     dims = _parse_dimensions(filename)
@@ -67,5 +83,6 @@ def process_image(
         width=dims[0] if dims else "UNKNOWN",
         height=dims[1] if dims else "UNKNOWN",
         analysis=analysis,
-        combined_text=_make_combined_text(analysis),
+        catalog_metadata=catalog_metadata,
+        combined_text=_make_combined_text(analysis, catalog_metadata),
     )
