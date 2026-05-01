@@ -104,7 +104,7 @@ Re-runs are idempotent: existing output files are skipped; failures are written 
 | Interface | Notes |
 |---|---|
 | **Bedrock Knowledge Base** | AWS managed RAG layer; low operational overhead |
-| **Jarvis** | LibreChat on EKS; multi model support; image upload for visual similarity search |
+| **Jarvis** | Deployed on EKS; multi model support; image upload for visual similarity search |
 
 **Image rendering:** The Knowledge Base test console returns S3 object keys in citations but cannot render images inline. 
 
