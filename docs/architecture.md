@@ -19,14 +19,10 @@ flowchart LR
         JSON --> EMBED["Embed + Index<br/>Bedrock KB Sync"]:::embed
     end
 
-    subgraph STORES["Vector Stores"]
-        direction TB
-        VS[("Amazon S3 Vectors")]:::embed
-        WV[("Weaviate")]:::embed
-    end
+    VS[("Vector Store")]:::embed
 
     EMBED --> VS
-    JSON --> WV
+    JSON --> VS
 
     subgraph SEARCH["Search Interface · planned"]
         direction LR
@@ -34,10 +30,9 @@ flowchart LR
     end
 
     KB --> VS
-    JARVIS --> WV
+    JARVIS --> VS
 
     style PIPELINE fill:#fafafa,stroke:#e0e0e0,stroke-width:1px
-    style STORES fill:#fafafa,stroke:#e0e0e0,stroke-width:1px
     style SEARCH fill:#fafafa,stroke:#e0e0e0,stroke-width:1px
 ```
 
