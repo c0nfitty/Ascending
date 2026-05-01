@@ -19,16 +19,25 @@ flowchart LR
         JSON --> EMBED["Embed + Index<br/>Bedrock KB Sync"]:::embed
     end
 
-    EMBED --> VS[("Vector Index<br/>Amazon S3 Vectors")]:::embed
+    subgraph STORES["Vector Stores"]
+        direction TB
+        VS[("Amazon S3 Vectors")]:::embed
+        WV[("Weaviate")]:::embed
+    end
 
-    subgraph SEARCH["Search Interface"]
+    EMBED --> VS
+    JSON --> WV
+
+    subgraph SEARCH["Search Interface · planned"]
         direction LR
         USER["Sales Team"]:::person --> KB["Knowledge Base"]:::iface & JARVIS["Jarvis"]:::iface
     end
 
-    KB & JARVIS --> VS
+    KB --> VS
+    JARVIS --> WV
 
     style PIPELINE fill:#fafafa,stroke:#e0e0e0,stroke-width:1px
+    style STORES fill:#fafafa,stroke:#e0e0e0,stroke-width:1px
     style SEARCH fill:#fafafa,stroke:#e0e0e0,stroke-width:1px
 ```
 
@@ -103,8 +112,8 @@ Re-runs are idempotent: existing output files are skipped; failures are written 
 
 | Interface | Notes |
 |---|---|
-| **Bedrock Knowledge Base** | AWS managed RAG layer; low operational overhead |
-| **Jarvis** | Deployed on EKS; multi model support; image upload for visual similarity search |
+| **Bedrock Knowledge Base** | AWS managed RAG layer over Amazon S3 Vectors; low operational overhead |
+| **Jarvis** | Deployed on EKS and queries its own Weaviate vector store; supports image upload for visual similarity search |
 
 **Image rendering:** The Knowledge Base test console returns S3 object keys in citations but cannot render images inline. 
 
