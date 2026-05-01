@@ -10,7 +10,7 @@ Source code for the Maple Rugs Semantic Search POC. Generates structured AI desc
 | Package manager | uv |
 | Agent framework | Strands Agents |
 | AWS SDK | boto3 |
-| LLM | TBD |
+| LLM | Claude Sonnet 4.6 / Amazon Nova Pro |
 | Vector DB | Amazon Bedrock Knowledge Base |
 | Web server | FastAPI + uvicorn |
 
@@ -47,13 +47,15 @@ curl -X POST http://localhost:8080/invocations -F "file=@path/to/local/image.png
 
 ## Environment Variables
 
-| Variable | Required | Default |
-|---|---|---|
-| `AWS_REGION` | Yes | us-east-1 |
-| `AWS_PROFILE` | Yes | — |
-| `S3_BUCKET` | Yes | — |
-| `BEDROCK_MODEL_ID` | Yes | us.anthropic.claude-sonnet-4-5-20250929-v1:0 |
-| `BEDROCK_KNOWLEDGE_BASE_ID` | Yes | — |
-| `A2A_HOST` | No | `0.0.0.0` |
-| `A2A_PORT` | No | `8080` |
-| `LOG_LEVEL` | No | `INFO` |
+| Variable | Required | Default | Notes |
+|---|---|---|---|
+| `AWS_REGION` | Yes | `us-east-1` | |
+| `AWS_PROFILE` | No | — | Local dev |
+| `S3_INPUT_BUCKET` | Yes | — | Source bucket containing rug images |
+| `S3_OUTPUT_BUCKET` | Yes | — | Output bucket for RugRecord JSON  |
+| `BEDROCK_MODEL_ID` | No | `us.anthropic.claude-sonnet-4-6` | Override to run a different model during evaluation |
+| `BEDROCK_KNOWLEDGE_BASE_ID` | Not Yet | — | Vector Store |
+| `A2A_HOST` | No | `0.0.0.0` | |
+| `A2A_PORT` | No | `8080` | |
+| `A2A_BASE_URL` | No | `http://localhost:8080` | Public URL returned in the agent card |
+| `LOG_LEVEL` | No | `INFO` | |
