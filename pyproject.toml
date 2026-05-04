@@ -1,7 +1,7 @@
 [project]
 name = "maplerugs"
 version = "0.1.0"
-description = "Maple Rugs AI description and semantic search"
+description = "Maples Rugs AI description and semantic search"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

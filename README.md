@@ -1,6 +1,6 @@
-# Maple Rugs Semantic Search POC
+# Maples Rugs Semantic Search POC
 
-Source code for the Maple Rugs Semantic Search POC. Generates structured AI descriptions for rug images stored in S3, indexes them in a Bedrock Knowledge Base, and surfaces semantic search results through a Jarvis chat interface.
+Source code for the Maples Rugs Semantic Search POC. Generates structured AI descriptions for rug images stored in S3, indexes them in a Bedrock Knowledge Base, and surfaces semantic search results through a Jarvis chat interface.
 
 ## Stack
 
