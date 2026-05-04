@@ -6,7 +6,7 @@ from fastapi import FastAPI, HTTPException, UploadFile
 from maplerugs.config import settings
 from maplerugs.pipeline import RugRecord, process_image
 
-app = FastAPI(title="Maple Rugs Vision Agent")
+app = FastAPI(title="Maples Rugs Vision Agent")
 
 _ACCEPTED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp"}
 
@@ -27,7 +27,7 @@ async def invocations(file: UploadFile) -> RugRecord:
 @app.get("/.well-known/agent.json")
 async def agent_card():
     return {
-        "name": "Maple Rugs Vision Agent",
+        "name": "Maples Rugs Vision Agent",
         "description": "Analyzes rug images and returns structured descriptions for semantic search indexing.",
         "url": settings.a2a_base_url,
         "version": "0.1.0",
