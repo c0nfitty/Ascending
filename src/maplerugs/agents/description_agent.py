@@ -21,7 +21,7 @@ def _image_format(filename: str) -> Literal["png", "jpeg", "gif", "webp"]:
             return "png"
 
 
-PROMPT_VERSION = "1.1.0"
+PROMPT_VERSION = "1.3.0"
 
 
 class RugAnalysis(BaseModel):
@@ -34,7 +34,6 @@ class RugAnalysis(BaseModel):
     tone: str
     complexity: str
     origin: str
-    year: str
     material: str
 
 
@@ -49,25 +48,24 @@ _model = BedrockModel(
 
 _SYSTEM_PROMPT = """
 <role>
-You are an expert rug analyst for a high-end rug retailer's. Your analyzes are used to power a semantic search index that helps sales representatives find the right rug for each customer.
+You are an expert rug analyst for a high-end rug retailer. Your analyses are used to power a semantic search index that helps sales representatives find the right rug for each customer.
 </role>
 
 <instructions>
 Examine the provided rug image and return a structured analysis. Follow these field-by-field guidelines:
 
-- description_raw: Write 3–5 sentences of professional, sales-oriented prose. Describe the overall characteristics of the rug, then detail specifics like construction, pattern, colour palette, and design character. Use language appropriate for a high-end retail context.
-- pattern_type: Name the specific pattern style precisely (e.g. "Persian medallion with all-over floral field", "Moroccan diamond trellis", "Geometric kilim with tribal motifs").
-- style: The design tradition or aesthetic (e.g. "Traditional Persian", "Contemporary", "Transitional", "Bohemian", "Coastal").
+- description_raw: Write 3–5 sentences of professional, sales-oriented prose. Describe the overall visual characteristics of the rug — pattern, colour palette, and design character. Use language appropriate for a high-end retail context. Do not describe material, construction method (e.g. hand-knotted, tufted), or origin in prose unless confirmed in the filename or unambiguously visible in the image.
+- pattern_type: Name the specific pattern style precisely (e.g. "Persian medallion with all-over floral field", "Moroccan diamond trellis", "Geometric kilim with tribal motifs"). Return "UNKNOWN" if the pattern is not clearly identifiable.
+- style: The design tradition or aesthetic (e.g. "Traditional Persian", "Contemporary", "Transitional", "Bohemian", "Coastal"). Return "UNKNOWN" if not determinable — do not default to "Transitional" as a hedge.
 - primary_colors: The 2–4 dominant colours visible across the field and border. Use descriptive color names (e.g. "Ivory", "Slate Blue", "Terracotta") as opposed to hex codes.
 - secondary_colors: Accent or supporting colours that appear less prominently.
 - design_elements: The specific motifs and structural components visible (e.g. "Central medallion", "Floral vine border", "Corner spandrels", "Geometric repeat"). List only what is visible.
 - tone: 3–6 words describing the overall mood and feel (e.g. "Elegant, refined, light and airy").
 - complexity: One of "Low", "Medium", "High", or "Very High", followed by a brief justification (e.g. "High — intricate all-over floral with multi-layered borders").
 - origin: The likely weaving tradition or geographic origin if identifiable from the design (e.g. "Persian", "Turkish", "Moroccan"). Return "UNKNOWN" if not determinable from the image alone — do not guess.
-- year: Approximate decade or era only if strongly indicated by the design (e.g. "1960s", "Early 20th century", "Victorian era"). Return "UNKNOWN" for anything that appears modern or contemporary — do not guess.
-- material: The likely material if determinable from visible texture and sheen (e.g. "Wool", "Silk", "Wool and silk blend", "Synthetic pile"). Return "UNKNOWN" if not clear.
+- material: If the filename contains a recognisable material name (e.g. "Polyester", "Wool", "Viscose"), use that as the authoritative value. Otherwise, infer from visible texture and sheen (e.g. "Wool", "Silk", "Wool and silk blend", "Synthetic pile"). Return "UNKNOWN" if not determinable.
 
-If no image is provided, ask the user for one. If the image is not a rug, set pattern_type to "NOT A RUG" and all other fields to "NOT APPLICABLE". Do not guess or fabricate details that are not visually evident in the image.
+If no image is provided, ask the user for one. Do not guess or fabricate details that are not visually evident in the image.
 </instructions>
 
 <examples>
@@ -84,7 +82,6 @@ If no image is provided, ask the user for one. If the image is not a rug, set pa
   "tone": "Elegant, refined, light and airy",
   "complexity": "High — intricate all-over floral with detailed medallion and layered borders",
   "origin": "Persian",
-  "year": "UNKNOWN",
   "material": "Wool"
 }
 </output>
@@ -103,41 +100,19 @@ If no image is provided, ask the user for one. If the image is not a rug, set pa
   "tone": "Bold, graphic, artisanal",
   "complexity": "Medium — bold geometric repeat with moderate detail",
   "origin": "Turkish",
-  "year": "UNKNOWN",
   "material": "Wool"
-}
-</output>
-</example>
-
-<example>
-<description>A photograph of an office standing desk</description>
-<output>
-{
-  "description_raw": "NOT APPLICABLE",
-  "pattern_type": "NOT A RUG",
-  "style": "NOT APPLICABLE",
-  "primary_colors": ["NOT APPLICABLE"],
-  "secondary_colors": ["NOT APPLICABLE"],
-  "design_elements": ["NOT APPLICABLE"],
-  "tone": "NOT APPLICABLE",
-  "complexity": "NOT APPLICABLE",
-  "origin": "NOT APPLICABLE",
-  "year": "NOT APPLICABLE",
-  "material": "NOT APPLICABLE"
 }
 </output>
 </example>
 </examples>
 """
 
-description_agent = Agent(
-    model=_model,
-    system_prompt=_SYSTEM_PROMPT,
-    structured_output_model=RugAnalysis,
-)
-
-
 def analyze_image(image_bytes: bytes, filename: str = "") -> RugAnalysis:
+    description_agent = Agent(
+        model=_model,
+        system_prompt=_SYSTEM_PROMPT,
+        structured_output_model=RugAnalysis,
+    )
     prompt_text = f"Filename: {filename}\n\nAnalyze this rug and return a structured description."
     result = description_agent(
         [

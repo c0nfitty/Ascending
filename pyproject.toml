@@ -9,6 +9,7 @@ dependencies = [
     "fastapi>=0.136.1",
     "pydantic-settings>=2.14.0",
     "strands-agents>=0.1.0",
+    "tenacity>=9.0.0",
     "uvicorn[standard]>=0.46.0",
 ]
 
